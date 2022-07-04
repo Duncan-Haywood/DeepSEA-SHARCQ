@@ -1,10 +1,9 @@
-from ..imageRegestration.mappings import NBB as NBB
+from deepseasharcq.imageRegestration.mappings import NBB as NBB
 from PIL import Image
-
 import matplotlib.pyplot as plt
 
-def main():
 
+def test_main():
     atlas = Image.open("./src/adapters/neural_best_buddies/images/Atlas.png").convert('RGB')
     brain = Image.open('./src/adapters/neural_best_buddies/images/TestBrainSection2.png').convert('RGB')
 
@@ -13,7 +12,3 @@ def main():
 
     plt.imshow(nbb.img)
     plt.show()
-    
-
-if __name__ == '__main__':
-    main()
