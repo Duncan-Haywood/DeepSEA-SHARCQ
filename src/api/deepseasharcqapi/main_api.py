@@ -29,9 +29,6 @@ def create_api():
 
         return {'results': 'we will email you with a signed url to the  predictions at the email you provided. You can download the result files with this.'} # maybe they need to do a get request at this fast api server when they have the url. TODO
 
-    # allows usage on aws lambda
-    global.handler = Mangum(app)
-
     return app
 
 def run_server(app: ASGIApplication):
