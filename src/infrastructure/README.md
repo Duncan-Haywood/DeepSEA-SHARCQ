@@ -1,6 +1,7 @@
 The end goal of this package is to be run in a CICD pipeline to deploy upon merge to main. 
 It should also be able to be run with a script for other neuroscience labs to deploy a self-hosted app with minimal effort. 
-This includes somewhat of a bad practice to use root access keys, but creates a more simple deployment for labs who have little development experience and allows them to create the deployment user with correct permissions to deploy. It is highly recommended to delete the access credentials once the new user is created. Also, remember to run the "delete infrastructure" docker command once completed. 
+- For use, create an aws account, go to iam and create a user which has the role attached to it that's described in the bootstrap_iam_role.json. Then get the environment variables from that user (using expiring token accesss). export them as environment variables on your laptop. and run the deploy.sh script from src/infrastructure file. 
+Also, remember to run the "delete infrastructure" docker command once completed. 
 
 
 So, 
