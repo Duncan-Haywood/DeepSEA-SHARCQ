@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "unzip_app"
+version = "0.1.0"
+description = "reads file names of zipped folders off of sqs queue; downloads from first buckert. unzips. uploads files to second bucket."
+authors = ["Duncan Haywood"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
