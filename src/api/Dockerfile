@@ -1,5 +1,5 @@
 FROM python:3.9-slim-bullseye AS base
-ARG YOUR_ENV
+ARG PROD
 WORKDIR /code
 
 ENV YOUR_ENV=${YOUR_ENV} \
@@ -20,7 +20,7 @@ COPY poetry.lock pyproject.toml /code/
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 # install dependencies
-RUN poetry install $(test "$YOUR_ENV" == production && echo "--no-dev") --no-interaction --no-ansi
+RUN poetry install $(test ! $PROD && echo "--no-dev") --no-interaction --no-ansi
 COPY . /code
 RUN poetry build --no-interaction
 
@@ -33,4 +33,5 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip install ./dist/*.whl
 
 #run ai script
-CMD python -m deepseasharcqapi.main_api
+ENV S3_BUCKET=None
+CMD python3 -m deepseasharcqapi.main_api
