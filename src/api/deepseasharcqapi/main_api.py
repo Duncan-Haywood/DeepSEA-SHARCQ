@@ -2,7 +2,6 @@ from fastapi import FastAPI, UploadFile
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Optional
-from mangum import Mangum
 from .aws_util import AWSUtil
 import uvicorn
 from asgiref.typing import ASGIApplication
@@ -17,22 +16,22 @@ def create_api():
     app = FastAPI()
 
     @app.post('/predict/')
-    async def predict(files: List[UploadFile], body: PredictBody):
+    async def predict(files_zip: UploadFile, body: PredictBody):
         #create folder path and awsUtil obj
         time = str(datetime.now())
         folder_path = f'{body.user}_{time}'
         aws_util = AWSUtil(folder_path)
-        #upload to s3 - TODO might need more parallelization or memory management ie in parts for upload - might need some errror handling for uploads greater than ~7 GB (~175 files) (10 gb max on lambda)
-        aws_util.s3_upload_files(files)
-        #run ai application and close it when done
-        aws_util.exec_predict_ecs(email=body.email)
+        aws_util.s3_upload_file(files_zip)
+        aws_util.store_user_data(body) #TODO
 
-        return {'results': 'we will email you with a signed url to the  predictions at the email you provided. You can download the result files with this.'} # maybe they need to do a get request at this fast api server when they have the url. TODO
-
+        return {'results': 'request results in a few minutes after we process your files.'}
+    @app.get('/results/')
+    async def get_results():
+        return NotImplementedError
     return app
 
 def run_server(app: ASGIApplication):
-    uvicorn.run(app, port=5000, log_level="info")
+    uvicorn.run(app, port=8000, log_level="info")
 
 def main():
     app = create_api()
