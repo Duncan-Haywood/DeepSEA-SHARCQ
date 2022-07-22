@@ -1,6 +1,3 @@
-ARG AI_ACTION
-ARG DATA_PATH
-
 FROM python:3.9-slim-bullseye AS base
 ARG YOUR_ENV
 WORKDIR /code
@@ -13,7 +10,7 @@ ENV YOUR_ENV=${YOUR_ENV} \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VERSION=1.0.0 \
-  VIRTUAL_ENV=/venv
+  VIRTUAL_ENV=/.venv
 
 
 FROM base as builder
@@ -28,9 +25,12 @@ COPY . /code
 RUN poetry build --no-interaction
 
 FROM base AS app
-COPY ./dist/*.whl ./ FROM builder
-COPY ./venv ./ FROM builder
+COPY --from=builder ./dist/*.whl ./
+COPY --from=builder ./$VIRTUAL_ENV .
 # activate virtual environment
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+#execution variables
+ENV AI_ACTION \
+    DATA_PATH
 #run ai script
 CMD python -m deepseasharcq.main --ai_action=$AI_ACTION --path=$DATA_PATH
