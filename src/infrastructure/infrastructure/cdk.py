@@ -1,7 +1,7 @@
 from aws_cdk import App
-from .fastapi_stack import FastAPIStack
-from .unzip_app_stack import UnzipAppStack
-from .ai_stack import AIStack
+from infrastructure.fastapi_stack import FastAPIStack
+from infrastructure.unzip_app_stack import UnzipAppStack
+from infrastructure.ai_stack import AIStack
 
 def main():
     app = App()
