@@ -1,5 +1,5 @@
 FROM python:3.9-slim-bullseye AS base
-ARG PROD=FALSE
+ARG PROD=TRUE
 ARG PACKAGE_NAME=deepseasharcqapi
 WORKDIR /code
 ENV PYTHONFAULTHANDLER=1 \
