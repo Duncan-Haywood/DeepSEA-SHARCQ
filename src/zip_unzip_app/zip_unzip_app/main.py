@@ -1,4 +1,7 @@
 from api.deepseasharcqapi import aws_util
+import shutil
+
+
 
 
 class UnzipApp:
@@ -8,7 +11,7 @@ class UnzipApp:
     def main(self):
         zip_name = self.aws_util.read_sqs()
         zip_folder = self.aws_util.download_s3(zip_name)
-        folder = gzip.unzip(zip_folder)
+        shutil.unpack_archive(zip_folder, extract_dir, archive_format)
         for file in folder: 
             with open(file) as f:
                 self.aws_util.upload_s3(f)
