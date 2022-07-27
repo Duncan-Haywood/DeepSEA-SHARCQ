@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "7a565a3dcfc53cf1baf190d8e076e70a0f1c82476fb7104f0aac812645f0b897": {
+      "source": {
+        "path": "AIStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7a565a3dcfc53cf1baf190d8e076e70a0f1c82476fb7104f0aac812645f0b897.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
