@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "frontend"
+version = "0.1.0"
+description = "frontend for deepsharcq"
+authors = ["Duncan Haywood"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+dash = "^2.6.0"
+dash-renderer = "^1.9.1"
+dash-html-components = "^2.0.0"
+dash-core-components = "^2.0.0"
+plotly = "^5.9.0"
+dash-cognito-auth = "^0.0.1"
+dash-auth = "^1.4.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
