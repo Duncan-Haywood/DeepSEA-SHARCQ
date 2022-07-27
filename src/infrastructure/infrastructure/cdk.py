@@ -6,9 +6,9 @@ from infrastructure.ai_stack import AIStack
 def main():
     app = App()
 
-    FastAPIStack(app, "FastAPIStack")
-    UnzipAppStack(app, "UnzipAppStack")
-    AIStack(app, "AIStack")
+    fastapi = FastAPIStack(app, "FastAPIStack")
+    unzipapp = UnzipAppStack(app, "UnzipAppStack", zipped_queue=fastapi.zipped_queue)
+    ai = AIStack(app, "AIStack", unzipped_queue=unzipapp.unzipped_queue)
     app.synth()
 
 if __name__ == '__main__':
