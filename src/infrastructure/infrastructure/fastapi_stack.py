@@ -20,7 +20,6 @@ class FastAPIStack(Stack):
         self,
         scope: Construct,
         id: str,
-        prod: bool = False,
         **kwargs,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -43,8 +42,8 @@ class FastAPIStack(Stack):
         self.s3_results_bucket = s3.Bucket(self, "AIResultsBucket")
 
         #SQS output queue from bucket which listens to object creations in zipped bucket
-        self.sqs_zips = sqs.Queue(self, "ZipsQueue")
-        self.s3_output_bucket.add_event_notification(s3.EventType.OBJECT_CREATED, s3n.SqsDestination(self.sqs_zips))
+        self.zipped_queue = sqs.Queue(self, "ZipsQueue")
+        self.s3_output_bucket.add_event_notification(s3.EventType.OBJECT_CREATED, s3n.SqsDestination(self.zipped_queue))
 
         # get resource names as environment for use in service TODO production/etc
         self.environment = dict(ZIPPED_BUCKET_NAME=self.s3_output_bucket.bucket_name, AI_RESULTS_BUCKET_NAME=self.s3_results_bucket.bucket_name)

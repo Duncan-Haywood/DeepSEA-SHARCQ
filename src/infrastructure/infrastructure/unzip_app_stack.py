@@ -33,7 +33,7 @@ class UnzipAppStack(Stack):
         self.unzipped_s3 = s3.Bucket(self, "UnzippedBucket")
         
         #SQS output queue from bucket which listens to object creations in unzippede bucket
-        self.sqs_unzipped = sqs.Queue(self, "UnzippedQueue")
+        self.unzipped_queue = sqs.Queue(self, "UnzippedQueue")
         self.unzipped_s3.add_event_notification(s3.EventType.OBJECT_CREATED, s3n.SqsDestination(self.sqs_unzipped))
 
         # environment for lambda function
