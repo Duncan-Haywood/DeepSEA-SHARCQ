@@ -11,3 +11,43 @@ So,
 - credentials should be and will be passed with environment variables. 
 - user forks repo to self host and have the ability to access secrets. 
 
+# Components:
+
+### rest api stack:
+- lambda on proxy api gateway
+    - get request for signed url for s3 bucket upload
+    - get request for signed url for zipped results s3 bucket download
+    - fast api in docker container
+- cognito authentication
+- iam policy for correct user bucket use
+- s3 upload bucket has sqs listener
+
+
+### frontend stack
+- amplify react code from figma - simple. 
+- calls rest api on two buttons for folder upload and download
+- buttons call code to get signed url, then post/get to url. 
+- sign in and sign up functionality for authentication
+- badge for uploading/processing/completed
+### unzip app stack:
+- lambda docker container
+- listens to zipped queue
+- unzips files
+- uploads to unzipped s3
+- sqs listener to unzipped s3
+- one lambda per folder
+### AI stack:
+- lambda docker container
+- listener to unzip queue
+- downloads from unzip s3.
+- prediction.
+- uploads to unzipped results s3
+- sqs queue listening to results s3
+- one lambda per file
+
+### zip app stack:
+- listens unzipped results sqs
+- zips folders
+- TODO: how do we know when all files are ready?
+- uploads zips to zipped results s3
+- s3 sends notification s3n to frontend to notify user the files are ready.
