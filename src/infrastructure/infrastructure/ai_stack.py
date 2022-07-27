@@ -19,11 +19,10 @@ class AIStack(Stack):
 
         # path to dockerfile
         self.file_path = path.join(path.dirname(__file__), "..", "..", "ai")
-
         # unzipped input queue
         self.unzipped_queue = unzipped_queue
 
-        # output s3 bucket 
+        # output s3 bucket - from fastapi stack.
         self.unzipped_results_s3  = s3.Bucket(self, "UnzippedResultsBucket")
         
         # output queue
