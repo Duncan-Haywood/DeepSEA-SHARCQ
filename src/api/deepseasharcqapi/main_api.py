@@ -5,37 +5,56 @@ from typing import List, Optional
 from .aws_util import AWSUtil
 import uvicorn
 from asgiref.typing import ASGIApplication
+import boto3
+import logging
 
+logger = logging.getLogger(__name__)
 
-class PredictBody(BaseModel):
-    user: str
-    email: str
-    api_key: Optional[str]
+class Body(BaseModel):
+    user_name: str
+    api_key: str
 
+def generate_presigned_url(s3_client, client_method, method_parameters, expires_in):
+    """
+    Generate a presigned Amazon S3 URL that can be used to perform an action.
+
+    :param s3_client: A Boto3 Amazon S3 client.
+    :param client_method: The name of the client method that the URL performs.
+    :param method_parameters: The parameters of the specified client method.
+    :param expires_in: The number of seconds the presigned URL is valid for.
+    :return: The presigned URL.
+    """
+    try:
+        url = s3_client.generate_presigned_url(
+            ClientMethod=client_method,
+            Params=method_parameters,
+            ExpiresIn=expires_in
+        )
+        logger.info("Got presigned URL: %s", url)
+    except ClientError:
+        logger.exception(
+            "Couldn't get a presigned URL for client method '%s'.", client_method)
+        raise
+    return url
 class API: 
     def __init__(self):
         self.app = FastAPI() # type: ASGIApplication
-        self.time = str(datetime.now())
         self.folder_path=None
         self.aws_util = None
+        self.s3_client = boto3.client("s3")
+        self.expires_in = 1800 # 30 minutes
+    
     def create_api(self):
         """two paths: post: predict and get: results"""
-        @self.app.post('/predict/')
-        async def predict(files_zip: UploadFile, body: PredictBody):
-            #create folder path and awsUtil obj
-            self.folder_path = f'{body.user}_{self.time}'
-            self.aws_util = AWSUtil(self.folder_path)
 
-            self.aws_util.s3_upload_file(files_zip)
-            self.aws_util.store_user_data(body) #TODO
+        @self.app.post('/upload_url/')
+        async def get_upload_signed_url(Body):
+            generate_presigned_url(self.s3_client, "put", method_parameters, self.expires_in)
 
-            return {'results': 'request results in a few minutes after we process your files.'}
-
-        @self.app.get('/results/')
-        async def get_results():
-            file = self.aws_util.s3_download_file(self.folder_path)
-            return dict(results=file)
-
+        @self.app.post('/download_url/')
+        async def get_download_signed_url(Body):
+            return NotImplementedError
+    
     def run_server(self):
         uvicorn.run(self.app, port=8000, log_level="info")
         
