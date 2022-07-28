@@ -24,9 +24,9 @@ So,
 
 
 ### frontend stack
-- amplify react code from figma - simple. 
+- dash code from docker container uvicorn server
 - calls rest api on two buttons for folder upload and download
-- buttons call code to get signed url, then post/get to url. 
+- buttons call code to get signed url, then post/get folder to url. 
 - sign in and sign up functionality for authentication
 - badge for uploading/processing/completed
 ### unzip app stack:
