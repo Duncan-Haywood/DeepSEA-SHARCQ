@@ -1,9 +1,7 @@
-FROM python:3.9-slim-bullseye AS base
-ARG YOUR_ENV
+FROM public.ecr.aws/lambda/python:3.9 AS base
 WORKDIR /code
 
-ENV YOUR_ENV=${YOUR_ENV} \
-  PYTHONFAULTHANDLER=1 \
+ENV PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
   PYTHONHASHSEED=random \
   PIP_NO_CACHE_DIR=off \
@@ -20,17 +18,15 @@ COPY poetry.lock pyproject.toml /code/
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 # install dependencies
-RUN poetry install $(test "$YOUR_ENV" == production && echo "--no-dev") --no-interaction --no-ansi
-COPY . /code
+RUN poetry install --no-dev --no-interaction --no-ansi
+COPY . /code/
 RUN poetry build --no-interaction
 
 FROM base AS app
-COPY --from=builder ./dist/*.whl ./
-COPY --from=builder ./$VIRTUAL_ENV .
+COPY --from=builder /code/dist/*.whl ./
+COPY --from=builder /code/$VIRTUAL_ENV ./
 # activate virtual environment
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-#execution variables
-ENV AI_ACTION \
-    DATA_PATH
-#run ai script
-CMD python -m deepseasharcq.main --ai_action=$AI_ACTION --path=$DATA_PATH
+RUN pip install deepseasharcq
+#run ai script through lambda
+CMD ["deepseasharcq.main.lambda_handler"]
