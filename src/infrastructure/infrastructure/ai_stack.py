@@ -28,11 +28,11 @@ class AIStack(Stack):
         # output queue
         self.sqs_results_unzipped = sqs.Queue(self, "UnzippedResultsQueue")
 
-        # add event listener from s3 to sqs
+        # add event listener from output s3 to sqs
         self.unzipped_results_s3.add_event_notification(s3.EventType.OBJECT_CREATED, s3n.SqsDestination(self.sqs_results_unzipped))
 
         # environment for lambda function
-        self.environment = dict(UNZIPPED_QUEUE_NAME=self.unzipped_queue.queue_name, UNZIPPED_RESULTS_BUCKET_NAME=self.unzipped_results_s3.bucket_name)
+        self.environment = dict(UNZIPPED_QUEUE_NAME=self.unzipped_queue.queue_name, UNZIPPED_RESULTS_BUCKET_NAME=self.unzipped_results_s3.bucket_name, AI_ACTION="predict")
 
 
         # lambda from dockerfile:
