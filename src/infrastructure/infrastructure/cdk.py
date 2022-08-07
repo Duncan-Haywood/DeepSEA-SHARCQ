@@ -3,6 +3,7 @@ from infrastructure.fastapi_stack import FastAPIStack
 from infrastructure.unzip_app_stack import UnzipAppStack
 from infrastructure.ai_stack import AIStack
 
+
 def main():
     app = App()
 
@@ -11,5 +12,6 @@ def main():
     ai = AIStack(app, "AIStack", unzipped_queue=unzipapp.unzipped_queue)
     app.synth()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
