@@ -17,8 +17,9 @@ class Zip:
         self.unzipped_files_path = "/tmp/unzipped_files"
         self.zipped_folder_path = "/tmp/zipped_folder"
 
-    def main(self):
-        is_completed = self.is_all_files_processed()
+    def main(self, message):
+        """ takes lambda s3n message, checks if all files have been processed from env UNZIPPED_FILES_BUCKET. zips files into folder. uploads folder to env ZIPPED_RESULTS_BUCKET."""
+        is_completed = self.is_all_files_processed(message)
         if is_completed:
             self.download_files()
             self.zip_files(self.unzipped_files_path, self.zipped_folder_path)
@@ -64,5 +65,5 @@ class Zip:
         return is_completed
 
 
-def lambda_handler():
-    pass
+def lambda_handler(event, context):
+    Zip().main(event)
