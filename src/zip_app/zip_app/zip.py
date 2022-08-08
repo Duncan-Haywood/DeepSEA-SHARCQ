@@ -1,4 +1,3 @@
-from asyncio.log import logger
 from aws_util.wildroot_aws_util.aws_util import AWSUtil
 import os
 from logging import Logger
