@@ -4,6 +4,7 @@ from wildroot_aws_util.aws_util import AWSUtil
 import uvicorn
 from asgiref.typing import ASGIApplication
 import os
+import mangum
 
 
 class Body(BaseModel):
@@ -41,7 +42,7 @@ class API:
                 "get", method_parameters, self.expires_in
             )
             return dict(download_url=url)
-
+        return self.app
     def run_server(self):
         uvicorn.run(self.app, port=8000, log_level="info")
 
@@ -50,9 +51,8 @@ class API:
         self.run_server()
 
 
-def main():
-    API().main()
+lambda_handler = mangum(API().create_api())
 
 
 if __name__ == "__main__":
-    main()
+    API().main()
