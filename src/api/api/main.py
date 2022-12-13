@@ -19,6 +19,8 @@ class API:
         self.aws_util = None
         self.expires_in = 1800  # 30 minutes
         self.aws_util = AWSUtil()
+        self.create_api()
+
 
     def create_api(self):
         """two paths: post: predict and get: results"""
@@ -46,13 +48,6 @@ class API:
     def run_server(self):
         uvicorn.run(self.app, port=8000, log_level="info")
 
-    def main(self):
-        self.create_api()
-        self.run_server()
-
-
-lambda_handler = mangum(API().create_api())
-
 
 if __name__ == "__main__":
-    API().main()
+    API().run_server()

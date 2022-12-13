@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "deepseasharcqapi"
+name = "api"
 version = "0.1.0"
 description = "fast api for deepsea-sharq ai solution"
 authors = ["Duncan Haywood"]
@@ -12,7 +12,6 @@ uvicorn = "^0.18.2"
 pydantic = "^1.9.1"
 python-multipart = "^0.0.5"
 boto3 = "^1.24.20"
-mangum = "^0.15.0"
 joblib = "^1.1.0"
 asgiref = "^3.5.2"
 
