@@ -7,11 +7,9 @@ BRANCH = "main"
 
 
 class PipelineStack(Stack):
-    def __init__(
-        self, scope: Construct, construct_id: str, branch=BRANCH, **kwargs
-    ) -> None:
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        source = pipelines.CodePipelineSource.git_hub(OWNER_REPO, branch)
+        source = pipelines.CodePipelineSource.git_hub(OWNER_REPO, BRANCH)
         self.pipeline = pipelines.CodePipeline(
             self,
             "Pipeline",
@@ -31,9 +29,6 @@ class PipelineStack(Stack):
             code_build_defaults=pipelines.CodeBuildOptions(
                 build_environment=codebuild.BuildEnvironment(
                     compute_type=codebuild.ComputeType.LARGE,
-                    # build_image=codebuild.LinuxBuildImage.from_asset(
-                    #     self, "GeneralBuildImage", directory=""
-                    # ),
                 ),
                 cache=codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER),
             ),
