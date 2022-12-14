@@ -1,4 +1,11 @@
 terraform {
+  cloud {
+    organization = "automate-ai"
+    hostname = "app.terraform.io"
+    workspaces {
+      tags =["DeepSEA-SHARCQ"]
+    }
+  }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
