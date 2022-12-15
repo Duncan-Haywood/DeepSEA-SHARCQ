@@ -1,4 +1,11 @@
 terraform {
+  cloud {
+    organization = "automate-ai"
+    hostname = "app.terraform.io"
+    workspaces {
+      tags =["deepsea-sharcq-packing"]
+    }
+  }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -13,10 +20,13 @@ terraform {
 }
 
 data "terraform_remote_state" "eks" {
-  backend = "local"
+  backend = "remote"
 
   config = {
-    path = "../eks_cluster/terraform.tfstate"
+    organization = "automate-ai"
+    workspaces = {
+      name = "deepsea-sharcq"
+    }
   }
 }
 

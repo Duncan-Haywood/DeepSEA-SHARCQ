@@ -3,7 +3,7 @@ terraform {
     organization = "automate-ai"
     hostname = "app.terraform.io"
     workspaces {
-      tags =["DeepSEA-SHARCQ"]
+      tags =["deepsea-sharcq"]
     }
   }
   required_providers {
