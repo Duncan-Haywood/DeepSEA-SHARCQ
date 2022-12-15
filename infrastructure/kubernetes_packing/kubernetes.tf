@@ -25,7 +25,7 @@ data "terraform_remote_state" "eks" {
   config = {
     organization = "automate-ai"
     workspaces = {
-      name = "deepsea-sharcq"
+      name = "deepsea-sharcq-eks"
     }
   }
 }
