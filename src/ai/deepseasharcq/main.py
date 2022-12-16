@@ -3,7 +3,7 @@ import logging
 
 class DeepSeaSharcq:
     def __init__(self):
-        return NotImplementedError
+        logging.error(NotImplementedError)
 
     def predict(self, data):
         logging.error(NotImplementedError)
@@ -14,4 +14,3 @@ class DeepSeaSharcq:
 
     def evaluate(self, data_path: str):
         return NotImplementedError
-

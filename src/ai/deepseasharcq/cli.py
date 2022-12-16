@@ -1,7 +1,7 @@
-
 from .main import DeepSeaSharcq
 import logging
 import typer
+
 
 def main(ai_action, data_path, result_path="./results"):
     """For use as CLI
