@@ -1,8 +1,8 @@
-resource "kubernetes_deployment" "nginx" {
+resource "kubernetes_deployment" "fastapi" {
   metadata {
-    name = "scalable-nginx-example"
+    name = "fastapi"
     labels = {
-      App = "ScalableNginxExample"
+      App = "FastAPI"
     }
   }
 
@@ -10,19 +10,19 @@ resource "kubernetes_deployment" "nginx" {
     replicas = 2
     selector {
       match_labels = {
-        App = "ScalableNginxExample"
+        App = "FastAPI"
       }
     }
     template {
       metadata {
         labels = {
-          App = "ScalableNginxExample"
+          App = "FastAPI"
         }
       }
       spec {
         container {
           image = "nginx:1.7.8"
-          name  = "example"
+          name  = "fastapi"
 
           port {
             container_port = 80
@@ -44,13 +44,13 @@ resource "kubernetes_deployment" "nginx" {
   }
 }
 
-resource "kubernetes_service" "nginx" {
+resource "kubernetes_service" "fastapi" {
   metadata {
-    name = "nginx-example"
+    name = "fastapi"
   }
   spec {
     selector = {
-      App = kubernetes_deployment.nginx.spec.0.template.0.metadata[0].labels.App
+      App = kubernetes_deployment.fastapi.spec.0.template.0.metadata[0].labels.App
     }
     port {
       port        = 80
@@ -61,6 +61,6 @@ resource "kubernetes_service" "nginx" {
   }
 }
 output "lb_ip" {
-  value = kubernetes_service.nginx.status.0.load_balancer.0.ingress.0.hostname
+  value = kubernetes_service.fastapi.status.0.load_balancer.0.ingress.0.hostname
 }
 
