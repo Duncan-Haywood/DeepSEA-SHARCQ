@@ -1,0 +1,159 @@
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Terraform.latest.gitlab-ci.yml
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Docker.gitlab-ci.yml
+
+# Build a Docker image with CI/CD and push to the GitLab registry.
+# Docker-in-Docker documentation: https://docs.gitlab.com/ee/ci/docker/using_docker_build.html
+#
+# This template uses one generic job with conditional builds
+# for the default branch and all other (MR) branches.
+
+
+image:
+  name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/releases/1.1:v0.43.0"
+
+
+
+variables:
+ TF_STATE_NAME: default
+ TF_CACHE_KEY: default
+ TF_ROOT: infrastructure
+ DOCKER_REGISTRY: 000000000000.dkr.ecr.eu-east-1.amazonaws.com
+ AWS_DEFAULT_REGION: eu-east-1
+ APP_NAME: dss_api
+ DOCKER_URI: TODO
+ DOCKER_HOST: tcp://docker:2375
+ DOCKER_DRIVER: overlay2
+ DOCKER_TLS_CERTDIR: ""
+
+
+stages:
+  - plan
+  - ecr
+  - docker
+  - eks
+  - packing
+  - cleanup
+
+# Plan
+ecr_plan:
+  stage: plan
+  <<: *terraform_plan
+  variables:
+    PROJECT: ecr
+  
+eks_plan:
+  stage: plan
+  <<: *terraform_plan
+  variables:
+    PROJECT: eks
+
+packing_plan:
+  stage: plan
+  <<: *terraform_plan
+  variables:
+    PROJECT: kubernetes_packing
+
+# deploy
+ecr:
+  stage: ecr
+  <<: *terraform_deploy
+  variables:
+    PROJECT: ecr
+  script:
+    - echo "ecr_url=$(terraform output ecr_url)" >> ecr.env
+    - echo "ECR_ID=$(terraform output ecr_id)" >> ecr.env
+  artifacts:
+    reports:
+      dotenv: ecr.env
+
+docker:
+  stage: docker
+  image: 
+    name: docker:latest
+  services:
+    - docker:19-dind
+  before_script:
+    - apk add --no-cache curl jq python3 py3-pip
+    - pip install awscli
+    - aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_ID
+    - aws --version
+    - docker info
+    - docker --version
+  script:
+    - docker build -t $ecr_url:$CI_PIPELINE_IID .
+    - docker push $ecr_url:$CI_PIPELINE_IID
+  dependencies:
+    - ecr
+
+eks:
+  stage: eks
+  <<: *terraform_deploy
+  variables:
+    PROJECT: eks
+
+packing:
+  stage: packing
+  <<: *terraform_deploy
+  variables:
+    PROJECT: kubernetes_packing
+
+
+
+
+# cleanup
+ecr_destroy:
+  stage: cleanup
+  <<: *terraform_destroy
+  variables:
+    PROJECT: ecr
+  
+eks_destroy:
+  stage: cleanup
+  <<: *terraform_destroy
+  variables:
+    PROJECT: eks
+
+packing_destroy:
+  stage: cleanup
+  <<: *terraform_destroy
+  variables:
+    PROJECT: kubernetes_packing
+
+
+
+.terraform_plan: &terraform_plan
+  variables:
+    - PROJECT
+  script:
+    - cd "${TF_ROOT}/${PROJECT}"
+    - gitlab-terraform plan
+    - gitlab-terraform plan-json
+  resource_group: ${TF_STATE_NAME}
+  artifacts:
+    paths:
+      - ${TF_ROOT}/${PROJECT}/plan.cache
+    reports:
+      terraform: ${TF_ROOT}/${PROJECT}/plan.json
+
+.terraform:deploy: &terraform_deploy
+  variables:
+   - PROJECT
+  script:
+    - cd "${TF_ROOT}/${PROJECT}"
+    - gitlab-terraform apply
+  resource_group: ${TF_STATE_NAME}
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+
+
+.terraform_destroy: &terraform_destroy
+  variables:
+    - PROJECT
+  script:
+    - cd "${TF_ROOT}/${PROJECT}"
+    - gitlab-terraform destroy
+  resource_group: ${TF_STATE_NAME}
+  when: manual
