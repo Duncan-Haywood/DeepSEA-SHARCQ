@@ -7,7 +7,7 @@ resource "kubernetes_deployment" "fastapi" {
   }
 
   spec {
-    replicas = 2
+    replicas = 1
     selector {
       match_labels = {
         App = "FastAPI"
@@ -21,7 +21,7 @@ resource "kubernetes_deployment" "fastapi" {
       }
       spec {
         container {
-          image = "nginx:1.7.8"
+          image = var.ecr_url
           name  = "fastapi"
 
           port {
@@ -30,12 +30,12 @@ resource "kubernetes_deployment" "fastapi" {
 
           resources {
             limits = {
-              cpu    = "0.5"
-              memory = "512Mi"
+              cpu    = "1"
+              memory = "2048Mi"
             }
             requests = {
               cpu    = "250m"
-              memory = "50Mi"
+              memory = "256Mi"
             }
           }
         }
