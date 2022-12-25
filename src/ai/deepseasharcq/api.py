@@ -13,10 +13,9 @@ async def predict(data):
     response = dss.predict(data)
     return response
 @app.get("/")
-async def predict():
-    
+async def main():
     return "server working on deepseasharcq; see /docs for usage of api"
-def run_server(self):
+def run_server():
     uvicorn.run(app, port=8000, log_level="info")
 
 
